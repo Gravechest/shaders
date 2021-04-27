@@ -1,44 +1,27 @@
+float distant(vec3 point,vec3 dest){
+    vec3 Axis = abs(point - dest);
+    return sqrt(sqrt(Axis[0] * Axis[0] + Axis[1] * Axis[1] + Axis[2] * Axis[2]));
+}
 void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
-    vec3 kleur = vec3(0.0,0.0,0.0);
-    float bounce = 0.0;
-    float afstand = 1.0;
-    float xcoord = fragCoord[0] / iResolution[0];
-    float ycoord = fragCoord[1] / iResolution[1];
-    vec3 ray = vec3(0.5,0.5,0.5);
-    float sphere[12] = float[12](cos(iTime) + 2.0,1.5,4.0,1.0,0.0,0.0
-    ,3.0,1.5,5.0,0.0,1.0,0.0);
-    for (int i = 0;i < 100;i++){
-        ray[0] += xcoord / 3.0;
-        ray[1] += ycoord / 3.0;
-        ray[2] += afstand / 3.0;
-        for (int i = 0;i < sphere.length();i+=6){
-            float xAxis = abs(ray[0] - sphere[i]);
-            float yAxis = abs(ray[1] - sphere[i+1]);
-            float zAxis = abs(ray[2] - sphere[i+2]);
-            if (sqrt(xAxis * xAxis
-            + yAxis * yAxis
-            + zAxis * zAxis) < 0.5){
-                kleur += (vec3(sphere[i+3],sphere[i+4],sphere[i+5]) / float(i));
-                bounce += 1.0;
-                afstand -= afstand * 2.0;
-            }
+    float xcoord = fragCoord[0]/iResolution[0] * 1.3;
+    float ycoord = fragCoord[1]/iResolution[1];
+    float sphere[4] = float[4](1.5,2.5,10.0,1.0);
+    vec3 light = vec3(10.0,10.0,10.0);
+    vec3 ray = vec3(0.0,0.0,0.0);
+    for(int i = 0;i < 100;i++){
+        float xAxis = abs(sphere[0] - ray[0]);
+        float yAxis = abs(sphere[1] - ray[1]);
+        float zAxis = abs(sphere[2] - ray[2]);
+        float dist = sqrt(sqrt(xAxis * xAxis + yAxis * yAxis + zAxis * zAxis));
+        dist -= sphere[3];
+        if (dist < 0.001){
+            float raylight = distant(ray,light);
+            float spherelight = distant(vec3(sphere[0],sphere[1],sphere[2]),light);
+            fragColor[0] = 0.5 + (raylight - spherelight) * 5.0;
         }
+        ray[0] += xcoord * dist;
+        ray[1] += ycoord * dist;
+        ray[2] += dist;
     }
-    if (bounce != 0.0){
-    fragColor[0] = kleur[0] / bounce;
-    fragColor[1] = kleur[1] / bounce;
-    fragColor[2] = kleur[2] / bounce;
-    }
-    float xAxis = abs(ray[0] - sphere[0]);
-    float yAxis = abs(ray[1] - sphere[1]);
-    float zAxis = abs(ray[2] - sphere[2]);
-    if (ray[1] > 4.0){
-        fragColor[2] = 0.0;
-    }
-    xAxis = ray[0] - sphere[0];
-    yAxis = ray[1] - sphere[1];
-    zAxis = ray[2] - sphere[2];
-    
-}
 }
