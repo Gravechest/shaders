@@ -39,6 +39,22 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
             break;
         }
     }
+    while (true){
+        vec3 betw = vec3(light - ray);
+        float dist = distant(vec3(sphere[0],sphere[1],sphere[2]),ray) - sphere[3];
+        for(int i2 = 0;i2 < sphere.length();i2+=7){
+            float distvb = distant(vec3(sphere[i2],sphere[i2+1],sphere[i2+2]),ray);
+            dist = min(dist,distvb - sphere[i2+3]);
+        }
+        float dist2 = min(dist,distant(ray,light));
+        dist2 /= dist;
+        ray[0] += betw[0] * dist;
+        ray[1] += betw[1] * dist;
+        ray[2] += betw[2] * dist;
+        if (ray[0] > light[0]){
+            break;
+        }
+    }
     fragColor[0] = distant(light,ray) / 100.0;
-
+    
 } 
