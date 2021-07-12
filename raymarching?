@@ -1,0 +1,20 @@
+void mainImage( out vec4 fragColor, in vec2 fragCoord )
+{
+    vec3 sphere = vec3(30.0,30.0,iTime);
+    vec3 rays = vec3(0.0,0.0,0.0);
+    vec2 coords = vec2(fragCoord[0] / iResolution[0],fragCoord[1] / iResolution[1]);
+    vec3 raydist = vec3(cos(coords[0]),sin(coords[0]),cos(coords[1]));
+    for(float i = 0.0;i < 100.0;i+=1.0){
+        vec3 axis = vec3(abs(rays - sphere));
+        float travel = sqrt(sqrt(axis[0] * axis[0] + axis[1] * axis[1] + axis[2] * axis[2]));
+        travel -= 2.0;
+        if(abs(travel) < 0.01){
+            float red = (sphere[0] - rays[0] + rays[1] - sphere[1]) / 4.5;
+            fragColor = vec4(red,0.0,0.0,1.0);
+            break;
+        }
+        rays[0] += raydist[0] * travel;
+        rays[1] += raydist[1] * travel;
+        rays[2] += raydist[2] * travel; 
+    }
+}
